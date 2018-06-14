@@ -1,0 +1,26 @@
+FROM 172.29.150.223:5000/alpine-glibc:3.7
+
+MAINTAINER XiangZhong Shi <xiangzhongshi@quarkfinance.com>
+
+ENV JAVA_VERSION_MAJOR=8 \
+    JAVA_VERSION_MINOR=171 \
+    JAVA_VERSION_BUILD=11 \
+    JAVA_PACKAGE=jdk \
+    JAVA_DOWNLOAD_ID=512cd62ec5174c3487ac17c61aaa89e8 \
+    JAVA_HOME=/opt/jdk \
+    PATH=${PATH}:${JAVA_HOME}/bin
+
+
+RUN set -ex && \
+    apk add curl && \
+    curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
+    http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_DOWNLOAD_ID}/jdk-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
+    JAVA_PACKAGE_SHA256=$(curl -sSL https://www.oracle.com/webfolder/s/digest/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}checksum.html | grep -E "${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64\.tar\.gz" | grep -Eo '(sha256: )[^<]+' | cut -d: -f2 | xargs) && \
+    echo "${JAVA_PACKAGE_SHA256}  /tmp/java.tar.gz" > /tmp/java.tar.gz.sha256 && \
+    sha256sum -c /tmp/java.tar.gz.sha256 && \
+    gunzip /tmp/java.tar.gz && \
+    tar -C /opt/ -xf /tmp/java.tar && \
+    mv /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} ${JAVA_HOME} && \
+    chown ${Sailor}:${Sailor} ${JAVA_HOME} -R && \
+    rm -rf /tmp/* && \
+    apk del curl
