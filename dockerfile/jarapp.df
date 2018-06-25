@@ -1,0 +1,28 @@
+FROM 172.29.150.223:5000/jdk:8u171
+
+ENV APP_HOME=/opt/jarapp \
+    AppLogs=/AppLogs \
+    GOSU_VERSION=1.10 \
+    GOSU_USER=1000:1000
+
+ENV GOSU_CHOWN="${APP_HOME} ${AppLogs}"
+
+VOLUME ${AppLogs}
+
+WORKDIR ${APP_HOME}
+
+COPY src/docker-entrypoint.sh /entrypoint.sh
+
+RUN set -x \
+    && apk add --no-cache curl tini \
+    && eval "arch=amd64" \
+    && curl -o gosu -sSL "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-${arch}" \
+    && mv gosu /usr/bin/gosu \
+    && chmod +x /usr/bin/gosu \
+    && ln -s /sbin/tini /bin/tini \
+    && mkdir -p ${APP_HOME} \
+    && ln -s ${AppLogs} ${APP_HOME}/logs \
+    && chmod +x /entrypoint.sh \
+    && apk del curl
+
+ENTRYPOINT ["/bin/tini", "--", "/entrypoint.sh"]
