@@ -1,0 +1,41 @@
+{
+    "storage-driver": "devicemapper",
+    "storage-opts": [
+        "dm.thinpooldev=/dev/mapper/docker-thinpool",
+        "dm.use_deferred_removal=true",
+        "dm.use_deferred_deletion=true"
+    ],
+    "registry-mirrors": [
+        "http://f2d6cb40.m.daocloud.io",
+        "http://ef017c13.m.daocloud.io",
+        "http://74ecfe5d.m.daocloud.io",
+        "http://e1c83636.m.daocloud.io"
+    ],
+    "insecure-registries": [
+        "172.29.150.223:5000",
+        "172.30.33.31:5000",
+        "172.29.151.41:5000"
+    ],
+    "live-restore": true,
+    "graph": "/opt/docker",
+    "hosts": [
+        "unix:///var/run/docker.sock",
+        "tcp://0.0.0.0:2375"
+    ],
+    "selinux-enabled": false,
+    "userland-proxy": false,
+    "exec-opts": [
+        "native.cgroupdriver=systemd"
+    ],
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "300m",
+        "max-file": "3"
+    },
+    "cluster-store": "etcd://172.29.150.202:2379",
+    "cluster-store-opts": {
+        "kv.cacertfile": "/opt/ssl/ca.pem",
+        "kv.certfile": "/opt/ssl/etcd.pem",
+        "kv.keyfile": "/opt/ssl/etcd-key.pem"
+    }
+}
