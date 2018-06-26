@@ -1,0 +1,22 @@
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network.target  rhel-push-plugin.socket
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/dockerd-current \
+        --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current \
+        --default-runtime=docker-runc
+ExecReload=/bin/kill -s HUP $MAINPID
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+
+TimeoutStartSec=0
+Delegate=yes
+KillMode=process
+MountFlags=slave
+
+[Install]
+WantedBy=multi-user.target
